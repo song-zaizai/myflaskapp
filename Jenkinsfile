@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        PYTHON_PATH = 'D:\\Program Files\\python\\python.exe'
+        PYTHON_PATH = "D:\\Program Files\\python\\python.exe"
     }
     
     stages {
@@ -10,7 +10,7 @@ pipeline {
             steps {
                 bat """
                     @echo off
-                    echo "=== 验证Python313路径及版本 ==="
+                    echo "=== Checking Python Installation ==="
                     ${PYTHON_PATH} --version  // 仅保留此关键验证（成功即证明路径正确）
                     echo "Python路径验证通过！"
                 """
