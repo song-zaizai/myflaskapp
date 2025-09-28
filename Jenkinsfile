@@ -1,17 +1,17 @@
 pipeline {
     agent any
-    
+
     environment {
         PYTHON_PATH = 'D:/Program Files/python/python.exe'
     }
-    
+
     stages {
         stage('Verify Python Path') {
             steps {
                 bat """
                     @echo off
                     echo "=== 验证Python313路径及版本 ==="
-                    ${PYTHON_PATH} --version  // 仅保留此关键验证（成功即证明路径正确）
+                    "${PYTHON_PATH}" --version  // <--- 已修改
                     echo "Python路径验证通过！"
                 """
             }
@@ -26,8 +26,8 @@ pipeline {
                 bat """
                     @echo off
                     echo "=== 修复Python313的pip环境 ==="
-                    ${PYTHON_PATH} -m ensurepip --upgrade  
-                    ${PYTHON_PATH} -m pip --version       
+                    "${PYTHON_PATH}" -m ensurepip --upgrade  // <--- 已修改
+                    "${PYTHON_PATH}" -m pip --version       // <--- 已修改
                 """
             }
         }
@@ -35,21 +35,22 @@ pipeline {
             steps {
                 bat """
                     @echo off
-                    ${PYTHON_PATH} -m pip install --upgrade pip
-                    ${PYTHON_PATH} -m pip install -r requirements.txt
+                    "${PYTHON_PATH}" -m pip install --upgrade pip // <--- 已修改
+                    "${PYTHON_PATH}" -m pip install -r requirements.txt // <--- 已修改
                 """
             }
         }
         stage('Lint') {
             steps {
-                bat "${PYTHON_PATH} -m pip install flake8 && ${PYTHON_PATH} -m flake8 app.py tests/"
+                // 注意这里需要将整个命令用双引号包裹，如果命令链中有特殊字符
+                bat "\"${PYTHON_PATH}\" -m pip install flake8 && \"${PYTHON_PATH}\" -m flake8 app.py tests/" // <--- 已修改
             }
         }
         stage('Test') {
             steps {
                 bat """
-                    ${PYTHON_PATH} -m pip install pytest
-                    ${PYTHON_PATH} -m pytest --cov=app tests/ --cov-report=html
+                    "${PYTHON_PATH}" -m pip install pytest // <--- 已修改
+                    "${PYTHON_PATH}" -m pytest --cov=app tests/ --cov-report=html // <--- 已修改
                 """
             }
             post {
@@ -68,15 +69,16 @@ pipeline {
         stage('Build') {
             steps {
                 bat """
-                    ${PYTHON_PATH} -m pip install pyinstaller
-                    ${PYTHON_PATH} -m PyInstaller --onefile app.py
+                    "${PYTHON_PATH}" -m pip install pyinstaller // <--- 已修改
+                    "${PYTHON_PATH}" -m PyInstaller --onefile app.py // <--- 已修改
                 """
             }
         }
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                bat "start ${PYTHON_PATH} app.py"  // 启动Flask应用（按需调整）
+                // 如果是启动应用程序，同样需要引号
+                bat "start \"\" \"${PYTHON_PATH}\" app.py"  // <--- 已修改
             }
         }
     }
